@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colorful Collision</title>
+    <style>
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        main {
+            width: 100vw;
+            height: 100vh;
+            background: #2a2a2a; 
+        }
+        
+        .element {
+            position: absolute;
+            border-radius: 8px; 
+            transition: background-color 0.3s; 
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #4CAF50; 
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <main id="myMain">
+        <button onclick="stop();">Стоп</button>
+        <button onclick="start();">Старт</button>
+        <div id="myContainer" class="container"></div>
+    </main>
+
+    <script>
+        var parentEl = { 
+            color: "#2196F3", 
+            width: "200px",
+            height: "100px",
+            speed: 1,
+            startPoint: 100,
+            maxLeft: 0,
+            maxRight: 500,
+            step: 1
+        };
+        
+        var childEl = { 
+            color: "#FF9800", 
+            width: "50px",
+            height: "50px",
+            speed: 10,
+            startPoint: 500,
+            maxLeft: 0,
+            maxRight: 500,
+            step: 1
+        };
+
+        var movingElement, targetElement;
+        
+        function checkCollision(el1, el2) {
+            const rect1 = el1.getBoundingClientRect();
+            const rect2 = el2.getBoundingClientRect();
+            
+            return !(
+                rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom
+            );
+        }
+        
+        function init(container, parentSettings, childSettings) {
+            movingElement = document.createElement('div');
+            movingElement.className = 'element';
+            movingElement.style.backgroundColor = parentSettings.color;
+            movingElement.style.width = parentSettings.width;
+            movingElement.style.height = parentSettings.height;
+            movingElement.style.left = parentSettings.startPoint + 'px';
+            container.appendChild(movingElement);
+            
+            targetElement = document.createElement('div');
+            targetElement.className = 'element';
+            targetElement.style.backgroundColor = childSettings.color;
+            targetElement.style.width = childSettings.width;
+            targetElement.style.height = childSettings.height;
+            targetElement.style.left = childSettings.startPoint + 'px';
+            container.appendChild(targetElement);
+            
+            start();
+        }
+        
+        function start() {
+            if (!window.animationId) {
+                animate();
+            }
+        }
+        
+        function stop() {
+            if (window.animationId) {
+                cancelAnimationFrame(window.animationId);
+                window.animationId = null;
+            }
+        }
+        
+        function animate() {
+            let currentLeft = parseInt(movingElement.style.left) || parentEl.startPoint;
+            currentLeft += parentEl.step * parentEl.speed;
+            
+            if (currentLeft >= parentEl.maxRight || currentLeft <= parentEl.maxLeft) {
+                parentEl.step *= -1;
+            }
+            
+            movingElement.style.left = currentLeft + 'px';
+            
+            let currentTargetLeft = parseInt(targetElement.style.left) || childEl.startPoint;
+            currentTargetLeft += childEl.step * childEl.speed;
+            
+            if (currentTargetLeft >= childEl.maxRight || currentTargetLeft <= childEl.maxLeft) {
+                childEl.step *= -1;
+            }
+            
+            targetElement.style.left = currentTargetLeft + 'px';
+            
+            // Проверка столкновения
+            if (checkCollision(movingElement, targetElement)) {
+                movingElement.style.backgroundColor = "#9C27B0"; 
+            } else {
+                movingElement.style.backgroundColor = parentEl.color;
+            }
+            
+            window.animationId = requestAnimationFrame(animate);
+        }
+        
+        init(myContainer, parentEl, childEl);
+    </script>
+</body>
+</html>
