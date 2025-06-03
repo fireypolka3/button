@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+div, button { 
+    transition: 1s; 
+}
+
+div.leftState {
+    height: 100px;
+    width: 100px;
+    border: 2px solid red;
+    background: white; 
+}
+button.leftState {
+    transform: rotate(-360deg);
+}
+
+div.rightState {
+    height: 100px;
+    width: 500px;
+    border: 2px solid red;
+    background: purple; 
+}
+button.rightState {
+    transform: rotate(500deg);
+}
+</style>
+
+<div class="leftState" id="myDiv">My First JavaScript</div>
+<button class="leftState" id="myButton">Button</button>
+
+<script>
+myButton.onclick = function() {
+    const isLeftState = myDiv.className === "leftState";
+    myButton.className = isLeftState ? "rightState" : "leftState";
+    myDiv.className = isLeftState ? "rightState" : "leftState";
+}
+</script>
+</body>
+</html>
